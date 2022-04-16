@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  asgard:
+    container_name: asgard
+    image: mongo:4.4
+    volumes:
+      - ~/yggdrasil-mongo-datastore/asgard_data:/data/db
+      - ./init-yggdrasil.sh:/init-yggdrasil.sh:ro
+    networks:
+      - bifrost
+    ports:
+      - 27017:27017
+    links:
+      - midgard
+      - niflhel
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "yggdrasil" ]
+  midgard:
+    container_name: midgard
+    image: mongo:4.4
+    volumes:
+      - ~/yggdrasil-mongo-datastore/midagr_data:/data/db
+    networks:
+      - bifrost
+    ports:
+      - 27018:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "yggdrasil" ]
+  niflhel:
+    container_name: niflhel
+    image: mongo:4.4
+    volumes:
+      - ~/yggdrasil-mongo-datastore/niflhel_data:/data/db
+    networks:
+      - bifrost
+    ports:
+      - 27019:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "yggdrasil" ]
+
+networks:
+  bifrost:
+    driver: bridge
